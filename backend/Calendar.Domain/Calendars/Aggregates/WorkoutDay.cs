@@ -1,9 +1,11 @@
 using Calendar.Domain.Calendars.Enums;
 using Calendar.Domain.Common;
+using Calendar.Shared.Errors;
+using CSharpFunctionalExtensions;
 
 namespace Calendar.Domain.Calendars.Aggregates;
 
-public sealed class WorkoutDay : Entity<Guid>
+public sealed class WorkoutDay : Common.Entity<Guid>
 {
     private readonly List<Exercise> _exercises = [];
 
@@ -17,34 +19,59 @@ public sealed class WorkoutDay : Entity<Guid>
         Date = date;
     }
 
-    public Exercise AddExercise(ActivityType activityType, decimal targetValue, string? notes = null)
+    public Result<Exercise, Error> AddExercise(ActivityType activityType, decimal targetValue)
     {
-        var exercise = new Exercise(activityType, targetValue, notes);
+        if (targetValue <= 0)
+            return GeneralErrors.ValueIsRequired(nameof(targetValue));
+        
+        var exercise = new Exercise(activityType, targetValue);
         _exercises.Add(exercise);
+        
         return exercise;
     }
 
-    public void UpdateExerciseStatus(Guid exerciseId, ExerciseStatus newStatus)
+    public UnitResult<Error> UpdateExerciseStatus(Guid exerciseId, ExerciseStatus newStatus)
     {
-        var exercise = GetExerciseOrThrow(exerciseId);
-        exercise.ChangeStatus(newStatus);
+        Result<Exercise, Error> exercise = GetExerciseOrError(exerciseId);
+        if (exercise.IsFailure)
+            return UnitResult.Failure(exercise.Error);
+        
+        exercise.Value.ChangeStatus(newStatus);
+        
+        return UnitResult.Success<Error>();
     }
 
-    public void UpdateExerciseProgress(Guid exerciseId, decimal actualValue)
+    public UnitResult<Error> UpdateExerciseProgress(Guid exerciseId, decimal actualValue)
     {
-        var exercise = GetExerciseOrThrow(exerciseId);
-        exercise.UpdateProgress(actualValue);
+        Result<Exercise, Error> exercise = GetExerciseOrError(exerciseId);
+        
+        if (exercise.IsFailure)
+            return UnitResult.Failure(exercise.Error);
+        
+        exercise.Value.UpdateProgress(actualValue);
+        
+        return UnitResult.Success<Error>();
     }
 
-    public void RemoveExercise(Guid exerciseId)
+    public UnitResult<Error> RemoveExercise(Guid exerciseId)
     {
-        var exercise = GetExerciseOrThrow(exerciseId);
-        _exercises.Remove(exercise);
+        Result<Exercise, Error> exercise = GetExerciseOrError(exerciseId);
+        if (exercise.IsFailure)
+            return UnitResult.Failure(exercise.Error);
+        
+        _exercises.Remove(exercise.Value);
+        
+        return UnitResult.Success<Error>();
     }
 
-    private Exercise GetExerciseOrThrow(Guid exerciseId)
+    private Result<Exercise, Error> GetExerciseOrError(Guid exerciseId)
     {
-        return _exercises.Find(e => e.Id == exerciseId)
-               ?? throw new DomainException($"Exercise with id '{exerciseId}' not found.");
+        var result = _exercises.Find(e => e!.Id == exerciseId);
+        
+        if (result is null)
+            return GeneralErrors.NotFound(exerciseId);
+        
+        return result;
+        
     }
 }
