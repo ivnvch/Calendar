@@ -1,0 +1,92 @@
+# ------------------------------
+# OS / editor
+# ------------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.swp
+*.tmp
+
+# ------------------------------
+# Logs
+# ------------------------------
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ------------------------------
+# .NET / C#
+# ------------------------------
+**/bin/
+**/obj/
+**/out/
+**/TestResults/
+**/publish/
+**/artifacts/
+
+*.cache
+*.dbmdl
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+*.psess
+*.vsp
+*.vspx
+*.pidb
+*.svclog
+
+# NuGet
+**/packages/
+!**/packages/build/
+*.nupkg
+*.snupkg
+*.nuspec
+
+# Rider / ReSharper
+_ReSharper*/
+*.DotSettings.user
+*.sln.iml
+
+# ASP.NET local settings/secrets
+**/appsettings.Development.local.json
+**/appsettings.Local.json
+
+# ------------------------------
+# Frontend / Node.js
+# ------------------------------
+**/node_modules/
+**/.npm/
+**/.pnpm-store/
+**/.yarn/
+**/.turbo/
+**/.parcel-cache/
+**/.eslintcache
+**/.stylelintcache
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/.nuxt/
+**/.svelte-kit/
+**/coverage/
+**/.cache/
+
+# Env files
+**/.env
+**/.env.*
+!**/.env.example
+
+# TypeScript
+**/*.tsbuildinfo
