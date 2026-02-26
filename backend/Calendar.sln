@@ -6,6 +6,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{2527
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar.Domain", "Calendar.Domain\Calendar.Domain.csproj", "{B28F762B-FD36-4FB4-BB94-CEAD6EBF7946}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar.Infrastructure.Postgres", "Calendar.Infrastructure.Postgres\Calendar.Infrastructure.Postgres.csproj", "{7A45F979-F812-4B77-8389-0D9941FD0945}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Calendar.Shared", "Calendar.Shared\Calendar.Shared.csproj", "{E228466D-8273-4A8B-B039-273E479760EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,9 +24,19 @@ Global
 		{B28F762B-FD36-4FB4-BB94-CEAD6EBF7946}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B28F762B-FD36-4FB4-BB94-CEAD6EBF7946}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B28F762B-FD36-4FB4-BB94-CEAD6EBF7946}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A45F979-F812-4B77-8389-0D9941FD0945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A45F979-F812-4B77-8389-0D9941FD0945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A45F979-F812-4B77-8389-0D9941FD0945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A45F979-F812-4B77-8389-0D9941FD0945}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E228466D-8273-4A8B-B039-273E479760EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E228466D-8273-4A8B-B039-273E479760EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E228466D-8273-4A8B-B039-273E479760EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E228466D-8273-4A8B-B039-273E479760EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3C6102A7-157D-4609-A227-4B65CAE56FB5} = {2527A029-B264-4E90-A7A7-2967887A9367}
 		{B28F762B-FD36-4FB4-BB94-CEAD6EBF7946} = {2527A029-B264-4E90-A7A7-2967887A9367}
+		{7A45F979-F812-4B77-8389-0D9941FD0945} = {2527A029-B264-4E90-A7A7-2967887A9367}
+		{E228466D-8273-4A8B-B039-273E479760EF} = {2527A029-B264-4E90-A7A7-2967887A9367}
 	EndGlobalSection
 EndGlobal

@@ -6,5 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Calendar.Shared\Calendar.Shared.csproj" />
+    </ItemGroup>
+
 
 </Project>
