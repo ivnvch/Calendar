@@ -1,0 +1,18 @@
+﻿services:
+
+  postgres:
+    container_name: calendar-postgres
+    image: postgres
+    ports:
+      - 5437:5432
+    environment:
+      POSTGRES_DB: calendar_service_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - calendar-postgres-data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  calendar-postgres-data:
+

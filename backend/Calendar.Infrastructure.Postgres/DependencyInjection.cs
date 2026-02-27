@@ -1,3 +1,6 @@
+using Calendar.Application.Abstractions.Database;
+using Calendar.Application.WorkoutDays.Repositories;
+using Calendar.Infrastructure.Postgres.WorkoutDays;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,30 +11,47 @@ namespace Calendar.Infrastructure.Postgres;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddPostgres(configuration);
-        
-        return services;
-    }
-
-    private static void AddPostgres(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContextPool<CalendarDbContext>((sp, options) =>
+        public IServiceCollection AddInfrastructure(IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("calendar_connection");
+            services
+                .AddRepositories()
+                .AddPostgres(configuration);
+        
+            return services;
+        }
 
-            IHostEnvironment? hostEnvironment = sp.GetService<IHostEnvironment>();
-            ILoggerFactory? loggerFactory = sp.GetService<ILoggerFactory>();
+        private IServiceCollection AddPostgres(IConfiguration configuration)
+        {
+            services.AddDbContextPool<CalendarDbContext>((sp, options) =>
+            {
+                var connectionString = configuration.GetConnectionString("calendar_connection");
+
+                IHostEnvironment? hostEnvironment = sp.GetService<IHostEnvironment>();
+                ILoggerFactory? loggerFactory = sp.GetService<ILoggerFactory>();
             
-            options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString);
 
-            if (hostEnvironment == null || !hostEnvironment.IsDevelopment()) return;
-            options.EnableSensitiveDataLogging();
-            options.EnableDetailedErrors();
+                if (hostEnvironment == null || !hostEnvironment.IsDevelopment()) return;
+                options.EnableSensitiveDataLogging();
+                options.EnableDetailedErrors();
             
-            options.UseLoggerFactory(loggerFactory);
+                options.UseLoggerFactory(loggerFactory);
 
-        });
+            });
+            
+            services.AddScoped<IReadDbContext>(provider => provider.GetRequiredService<CalendarDbContext>());
+            
+            return services;
+        }
+
+        private IServiceCollection AddRepositories()
+        {
+            services.AddScoped<IWorkoutDayRepository, WorkoutDayRepository>();
+        
+            return services;
+        }
+
     }
 }

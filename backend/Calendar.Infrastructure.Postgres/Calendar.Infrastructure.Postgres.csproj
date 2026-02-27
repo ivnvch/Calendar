@@ -10,13 +10,9 @@
       <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.3" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
     </ItemGroup>
-
+   
     <ItemGroup>
-      <Folder Include="Repositories\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Calendar.Domain\Calendar.Domain.csproj" />
-    </ItemGroup>
+      <ProjectReference Include="..\Calendar.Application\Calendar.Application.csproj" />
+   </ItemGroup>
 
 </Project>
