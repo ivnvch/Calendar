@@ -21,4 +21,5 @@ public class CalendarDbContext : DbContext, IReadDbContext
     }
 
     public IQueryable<WorkoutDay> WorkoutDaysRead => Set<WorkoutDay>().AsQueryable().AsNoTracking();
+
 }
