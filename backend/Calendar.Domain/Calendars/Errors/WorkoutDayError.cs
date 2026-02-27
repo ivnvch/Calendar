@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.JavaScript;
 using Calendar.Shared.Errors;
 
 namespace Calendar.Domain.Calendars.Errors;

@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-
-namespace Calendar.Infrastructure.Postgres.WorkoutDays;
+namespace Calendar.Infrastructure.Postgres.WorkoutDays.Repositories;
 
 public class WorkoutDayRepository : IWorkoutDayRepository
 {
@@ -58,7 +57,9 @@ public class WorkoutDayRepository : IWorkoutDayRepository
 
     public async Task<Result<WorkoutDay, Error>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var query = await _context.WorkoutDays.FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
+        var query = await _context.WorkoutDays
+            .Include(w => w.Exercises)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
         if (query is null)
             return GeneralErrors.NotFound(id);
         
@@ -67,7 +68,9 @@ public class WorkoutDayRepository : IWorkoutDayRepository
 
     public async Task<Result<WorkoutDay, Error>> GetByDateAsync(DateOnly date, CancellationToken cancellationToken)
     {
-        var query = await _context.WorkoutDays.FirstOrDefaultAsync(w => w.Date == date, cancellationToken);
+        var query = await _context.WorkoutDays
+            .Include(w => w.Exercises)
+            .FirstOrDefaultAsync(w => w.Date == date, cancellationToken);
 
         if (query is null)
             return GeneralErrors.NotFound(date);

@@ -36,9 +36,9 @@ public sealed class WorkoutDay : Common.Entity<Guid>
         if (exercise.IsFailure)
             return UnitResult.Failure(exercise.Error);
         
-        exercise.Value.ChangeStatus(newStatus);
-        
-        return UnitResult.Success<Error>();
+        UnitResult<Error> changeStatus = exercise.Value.ChangeStatus(newStatus);
+
+        return !changeStatus.IsFailure ? UnitResult.Success<Error>() : changeStatus;
     }
 
     public UnitResult<Error> UpdateExerciseProgress(Guid exerciseId, decimal actualValue)
@@ -48,9 +48,9 @@ public sealed class WorkoutDay : Common.Entity<Guid>
         if (exercise.IsFailure)
             return UnitResult.Failure(exercise.Error);
         
-        exercise.Value.UpdateProgress(actualValue);
-        
-        return UnitResult.Success<Error>();
+        UnitResult<Error> updateProgress = exercise.Value.UpdateProgress(actualValue);
+
+        return !updateProgress.IsFailure ? UnitResult.Success<Error>() : updateProgress;
     }
 
     public UnitResult<Error> RemoveExercise(Guid exerciseId)
