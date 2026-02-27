@@ -13,6 +13,11 @@ public static class GeneralErrors
         string forId = id == null ? string.Empty : $" по Id '{id}'";
         return Error.NotFound("record.not.found", $"{name ?? "запись"} не найдена{forId}", null);
     }
+    
+    public static Error NotFound(DateOnly? date = null)
+    {
+        return Error.NotFound("record.not.found", $"запись не найдена {date}", null);
+    }
 
     public static Error ValueIsRequired(string? name = null)
     {
