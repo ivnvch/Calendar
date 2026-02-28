@@ -1,5 +1,6 @@
 using Calendar.Application.Abstractions.Database;
 using Calendar.Application.WorkoutDays.Repositories;
+using Calendar.Infrastructure.Postgres.Database;
 using Calendar.Infrastructure.Postgres.WorkoutDays;
 using Calendar.Infrastructure.Postgres.WorkoutDays.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,7 @@ public static class DependencyInjection
         private IServiceCollection AddRepositories()
         {
             services.AddScoped<IWorkoutDayRepository, WorkoutDayRepository>();
+            services.AddScoped<ITransactionManager, TransactionManager>();
         
             return services;
         }

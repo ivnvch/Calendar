@@ -12,12 +12,12 @@ public class CreateWorkoutDayValidator : AbstractValidator<CreateWorkoutDayComma
             .Must(date => date >= DateOnly.FromDateTime(DateTime.UtcNow))
             .WithMessage("The date cannot be in the past");
         
-        RuleFor(command => command.ExerciseDtos)
+        RuleFor(command => command.Exercises)
             .NotNull()
             .NotEmpty()
             .WithMessage("At least one exercise is required");
 
-        RuleForEach(command => command.ExerciseDtos)
+        RuleForEach(command => command.Exercises)
             .ChildRules(exercise =>
             {
                 exercise.RuleFor(e => e.ActivityType)

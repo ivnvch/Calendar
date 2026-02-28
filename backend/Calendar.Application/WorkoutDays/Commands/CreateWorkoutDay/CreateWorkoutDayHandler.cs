@@ -4,6 +4,7 @@ using Calendar.Application.Extensions.Validations;
 using Calendar.Application.WorkoutDays.Repositories;
 using Calendar.Domain.Calendars;
 using Calendar.Domain.Calendars.Aggregates;
+using Calendar.Domain.Calendars.Enums;
 using Calendar.Shared.Errors;
 using CSharpFunctionalExtensions;
 using FluentValidation;
@@ -32,7 +33,7 @@ public sealed class CreateWorkoutDayHandler : ICommandHandler<Guid, CreateWorkou
 
         WorkoutDay day = new WorkoutDay(command.Date);
 
-        IEnumerable<Result<Exercise,Error>> exercises = command.ExerciseDtos.Select(e => day.AddExercise(e.ToActivityType(), e.TargetValue));
+        IEnumerable<Result<Exercise,Error>> exercises = command.Exercises.Select(e => day.AddExercise(e.ActivityType.ToEnum<ActivityType>(), e.TargetValue));
         
         Result<Exercise, Error> failed = exercises.FirstOrDefault(r => r.IsFailure);
         if (failed.IsFailure)
