@@ -24,10 +24,10 @@ public class GetMonthPeriodHandler : IQueryHandler<IReadOnlyList<MonthDayPeriodD
 
         var period = await _readDbContext.WorkoutDaysRead
             .Where(w => w.Date >= from && w.Date <= to)
+            .OrderBy(w => w.Date)
             .Select(w => new MonthDayPeriodDto(
                 w.Date,
                 w.Exercises.Count))
-            .OrderBy(s => s.Date)
             .ToListAsync(cancellationToken);
 
         return period;
