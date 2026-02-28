@@ -13,48 +13,44 @@ namespace Calendar.Infrastructure.Postgres;
 
 public static class DependencyInjection
 {
-    extension(IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(
+        this IServiceCollection services, IConfiguration configuration)
     {
-        public IServiceCollection AddInfrastructure(IConfiguration configuration)
+        services
+            .AddRepositories()
+            .AddPostgres(configuration);
+
+        return services;
+    }
+
+    private static IServiceCollection AddPostgres(
+        this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContextPool<CalendarDbContext>((sp, options) =>
         {
-            services
-                .AddRepositories()
-                .AddPostgres(configuration);
-        
-            return services;
-        }
+            var connectionString = configuration.GetConnectionString("calendar_connection");
 
-        private IServiceCollection AddPostgres(IConfiguration configuration)
-        {
-            services.AddDbContextPool<CalendarDbContext>((sp, options) =>
-            {
-                var connectionString = configuration.GetConnectionString("calendar_connection");
+            IHostEnvironment? hostEnvironment = sp.GetService<IHostEnvironment>();
+            ILoggerFactory? loggerFactory = sp.GetService<ILoggerFactory>();
 
-                IHostEnvironment? hostEnvironment = sp.GetService<IHostEnvironment>();
-                ILoggerFactory? loggerFactory = sp.GetService<ILoggerFactory>();
-            
-                options.UseNpgsql(connectionString);
+            options.UseNpgsql(connectionString);
 
-                if (hostEnvironment == null || !hostEnvironment.IsDevelopment()) return;
-                options.EnableSensitiveDataLogging();
-                options.EnableDetailedErrors();
-            
-                options.UseLoggerFactory(loggerFactory);
+            if (hostEnvironment == null || !hostEnvironment.IsDevelopment()) return;
+            options.EnableSensitiveDataLogging();
+            options.EnableDetailedErrors();
+            options.UseLoggerFactory(loggerFactory);
+        });
 
-            });
-            
-            services.AddScoped<IReadDbContext>(provider => provider.GetRequiredService<CalendarDbContext>());
-            
-            return services;
-        }
+        services.AddScoped<IReadDbContext>(provider => provider.GetRequiredService<CalendarDbContext>());
 
-        private IServiceCollection AddRepositories()
-        {
-            services.AddScoped<IWorkoutDayRepository, WorkoutDayRepository>();
-            services.AddScoped<ITransactionManager, TransactionManager>();
-        
-            return services;
-        }
+        return services;
+    }
 
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IWorkoutDayRepository, WorkoutDayRepository>();
+        services.AddScoped<ITransactionManager, TransactionManager>();
+
+        return services;
     }
 }

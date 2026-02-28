@@ -7,32 +7,21 @@ namespace Calendar.Application;
 
 public static class DependencyInjection
 {
-    extension(IServiceCollection  services)
+    public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        public IServiceCollection AddApplication()
-        {
-            services
-                .AddComponent();
-        
-            return services;
-        }
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-        private IServiceCollection AddComponent()
-        {
-            services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
-        
-            var assembly = typeof(DependencyInjection).Assembly;
+        var assembly = typeof(DependencyInjection).Assembly;
 
-            services.Scan(scan => scan.FromAssemblies(assembly)
-                .AddClasses(classes => classes
-                    .AssignableToAny(
-                        typeof(ICommandHandler<,>),
-                        typeof(ICommandHandler<>),
-                        typeof(IQueryHandler<,>)))
-                .AsSelfWithInterfaces()
-                .WithScopedLifetime());
-        
-            return services;
-        }
+        services.Scan(scan => scan.FromAssemblies(assembly)
+            .AddClasses(classes => classes
+                .AssignableToAny(
+                    typeof(ICommandHandler<,>),
+                    typeof(ICommandHandler<>),
+                    typeof(IQueryHandler<,>)))
+            .AsSelfWithInterfaces()
+            .WithScopedLifetime());
+
+        return services;
     }
 }
