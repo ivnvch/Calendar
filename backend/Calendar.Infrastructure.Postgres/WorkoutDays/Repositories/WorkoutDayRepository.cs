@@ -25,7 +25,10 @@ public class WorkoutDayRepository : IWorkoutDayRepository
         try
         {
             _context.WorkoutDays.Add(workoutDay);
-            _logger.LogInformation($"Added WorkoutDay with ID: {workoutDay.Id}");
+            
+            await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Added WorkoutDay with ID: {WorkoutDayId}", workoutDay.Id);
 
             return workoutDay.Id;
         }
@@ -37,7 +40,7 @@ public class WorkoutDayRepository : IWorkoutDayRepository
                 return WorkoutDayError.WorkoutDayConflict(workoutDay.Date);
             }
             
-            _logger.LogError(ex, "An error occurred while adding workoutDay: {workoutDay}", workoutDay);
+            _logger.LogError(ex, "An error occurred while saving changes");
 
             return WorkoutDayError.DatabaseError();
         }

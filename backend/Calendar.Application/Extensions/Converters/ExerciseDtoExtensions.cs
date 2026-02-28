@@ -3,8 +3,8 @@ using Calendar.Shared.DTOs.Exercises;
 
 namespace Calendar.Application.Extensions.Converters;
 
-public static class ExerciseDtoExtensions
+public static class EnumExtensions
 {
-    public static ActivityType ToActivityType(this ExerciseDto dto)
-        => Enum.Parse<ActivityType>(dto.ActivityType, ignoreCase: true);
+    public static TEnum ToEnum<TEnum>(this string value) where TEnum : struct, Enum
+        => Enum.Parse<TEnum>(value, ignoreCase: true);
 }

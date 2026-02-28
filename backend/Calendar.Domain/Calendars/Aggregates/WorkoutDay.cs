@@ -1,5 +1,4 @@
 using Calendar.Domain.Calendars.Enums;
-using Calendar.Domain.Common;
 using Calendar.Shared.Errors;
 using CSharpFunctionalExtensions;
 
@@ -38,7 +37,7 @@ public sealed class WorkoutDay : Common.Entity<Guid>
         
         UnitResult<Error> changeStatus = exercise.Value.ChangeStatus(newStatus);
 
-        return !changeStatus.IsFailure ? UnitResult.Success<Error>() : changeStatus;
+        return changeStatus;
     }
 
     public UnitResult<Error> UpdateExerciseProgress(Guid exerciseId, decimal actualValue)
@@ -50,23 +49,12 @@ public sealed class WorkoutDay : Common.Entity<Guid>
         
         UnitResult<Error> updateProgress = exercise.Value.UpdateProgress(actualValue);
 
-        return !updateProgress.IsFailure ? UnitResult.Success<Error>() : updateProgress;
-    }
-
-    public UnitResult<Error> RemoveExercise(Guid exerciseId)
-    {
-        Result<Exercise, Error> exercise = GetExerciseOrError(exerciseId);
-        if (exercise.IsFailure)
-            return UnitResult.Failure(exercise.Error);
-        
-        _exercises.Remove(exercise.Value);
-        
-        return UnitResult.Success<Error>();
+        return updateProgress;
     }
 
     private Result<Exercise, Error> GetExerciseOrError(Guid exerciseId)
     {
-        var result = _exercises.Find(e => e!.Id == exerciseId);
+        var result = _exercises.Find(e => e.Id == exerciseId);
         
         if (result is null)
             return GeneralErrors.NotFound(exerciseId);
