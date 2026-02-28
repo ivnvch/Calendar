@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 
-
-namespace Calendar.Infrastructure.Postgres.WorkoutDays;
+namespace Calendar.Infrastructure.Postgres.WorkoutDays.Repositories;
 
 public class WorkoutDayRepository : IWorkoutDayRepository
 {
@@ -26,7 +25,10 @@ public class WorkoutDayRepository : IWorkoutDayRepository
         try
         {
             _context.WorkoutDays.Add(workoutDay);
-            _logger.LogInformation($"Added WorkoutDay with ID: {workoutDay.Id}");
+            
+            await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Added WorkoutDay with ID: {WorkoutDayId}", workoutDay.Id);
 
             return workoutDay.Id;
         }
@@ -38,7 +40,7 @@ public class WorkoutDayRepository : IWorkoutDayRepository
                 return WorkoutDayError.WorkoutDayConflict(workoutDay.Date);
             }
             
-            _logger.LogError(ex, "An error occurred while adding workoutDay: {workoutDay}", workoutDay);
+            _logger.LogError(ex, "An error occurred while saving changes");
 
             return WorkoutDayError.DatabaseError();
         }
@@ -58,7 +60,9 @@ public class WorkoutDayRepository : IWorkoutDayRepository
 
     public async Task<Result<WorkoutDay, Error>> GetByIdAsync(Guid id, CancellationToken cancellationToken)
     {
-        var query = await _context.WorkoutDays.FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
+        var query = await _context.WorkoutDays
+            .Include(w => w.Exercises)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
         if (query is null)
             return GeneralErrors.NotFound(id);
         
@@ -67,7 +71,9 @@ public class WorkoutDayRepository : IWorkoutDayRepository
 
     public async Task<Result<WorkoutDay, Error>> GetByDateAsync(DateOnly date, CancellationToken cancellationToken)
     {
-        var query = await _context.WorkoutDays.FirstOrDefaultAsync(w => w.Date == date, cancellationToken);
+        var query = await _context.WorkoutDays
+            .Include(w => w.Exercises)
+            .FirstOrDefaultAsync(w => w.Date == date, cancellationToken);
 
         if (query is null)
             return GeneralErrors.NotFound(date);

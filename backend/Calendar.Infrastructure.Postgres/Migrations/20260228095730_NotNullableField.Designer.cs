@@ -3,6 +3,7 @@ using System;
 using Calendar.Infrastructure.Postgres;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Calendar.Infrastructure.Postgres.Migrations
 {
     [DbContext(typeof(CalendarDbContext))]
-    partial class CalendarDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260228095730_NotNullableField")]
+    partial class NotNullableField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

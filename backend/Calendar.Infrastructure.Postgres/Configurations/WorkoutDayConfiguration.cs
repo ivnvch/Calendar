@@ -27,6 +27,7 @@ public class WorkoutDayConfiguration : IEntityTypeConfiguration<WorkoutDay>
         builder.HasMany(w  => w.Exercises)
             .WithOne()
             .HasForeignKey("workout_day_id")
+            .IsRequired() 
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
