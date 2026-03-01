@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Plus, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 
 import type { ActivityType, CreateExerciseDto } from "@/lib/types";
-import { createWorkoutDay } from "@/lib/api";
+import { createWorkoutDay, getWorkoutDay } from "@/lib/api";
 import { ACTIVITY_META, ACTIVITY_TYPES, cn } from "@/lib/utils";
 
 interface AddExerciseFormProps {
@@ -35,7 +35,22 @@ export function AddExerciseForm({ date }: AddExerciseFormProps) {
   const [exercises, setExercises] = useState<CreateExerciseDto[]>([]);
   const [activityType, setActivityType] = useState<ActivityType | "">("");
   const [targetValue, setTargetValue] = useState("");
+  const [showPastDateError, setShowPastDateError] = useState(false);
   const queryClient = useQueryClient();
+
+  const isPastDate = date < new Date().toISOString().split("T")[0];
+
+  // Проверяем, есть ли уже тренировка на эту дату (только когда диалог открыт)
+  const { data: workoutDay, error: workoutDayError } = useQuery({
+    queryKey: ["workoutDay", date],
+    queryFn: () => getWorkoutDay(date),
+    retry: false,
+    staleTime: Infinity,
+    enabled: open, // Запрашиваем только при открытом диалоге
+  });
+
+  // 404 означает, что тренировки нет - это нормальная ситуация
+  const hasWorkout = workoutDay !== undefined && workoutDay !== null && workoutDayError === undefined;
 
   const mutation = useMutation({
     mutationFn: (list: CreateExerciseDto[]) => createWorkoutDay(date, list),
@@ -45,7 +60,18 @@ export function AddExerciseForm({ date }: AddExerciseFormProps) {
       resetForm();
       setOpen(false);
     },
+    retry: false,
   });
+
+  function getErrorMessage(message: string): string {
+    if (message.includes("past")) {
+      return "Нельзя создать тренировку на прошедшую дату";
+    }
+    if (message.includes("already exists") || message.includes("conflict")) {
+      return "На эту дату уже есть тренировка";
+    }
+    return `Ошибка: ${message}`;
+  }
 
   function resetForm() {
     setExercises([]);
@@ -86,7 +112,17 @@ export function AddExerciseForm({ date }: AddExerciseFormProps) {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm">
+        <Button
+          size="sm"
+          disabled={isPastDate || hasWorkout}
+          onClick={(e) => {
+            if (isPastDate) {
+              e.preventDefault();
+              setShowPastDateError(true);
+              setTimeout(() => setShowPastDateError(false), 3000);
+            }
+          }}
+        >
           <Plus className="mr-1 h-4 w-4" />
           Добавить
         </Button>
@@ -95,6 +131,18 @@ export function AddExerciseForm({ date }: AddExerciseFormProps) {
         <DialogHeader>
           <DialogTitle>Новая тренировка</DialogTitle>
         </DialogHeader>
+
+        {showPastDateError && (
+          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            Нельзя создать тренировку на прошедшую дату
+          </div>
+        )}
+
+        {hasWorkout && (
+          <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+            На эту дату уже есть тренировка
+          </div>
+        )}
 
         <div className="space-y-4 py-4">
           {exercises.length > 0 && (
@@ -196,7 +244,7 @@ export function AddExerciseForm({ date }: AddExerciseFormProps) {
 
           {mutation.isError && (
             <p className="text-sm text-destructive">
-              Ошибка: {mutation.error.message}
+              {getErrorMessage(mutation.error.message)}
             </p>
           )}
         </div>

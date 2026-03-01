@@ -8,7 +8,7 @@ public record Envelope
 
     public Errors? ErrorList { get; }
 
-    public bool IsError => ErrorList != null || (ErrorList != null && ErrorList.Any());
+    public bool IsError => ErrorList != null && ErrorList.Any();
     
     public DateTime TimeGenerated { get; }
     
@@ -34,7 +34,7 @@ public record Envelope<T>
     
     public Errors? ErrorsList { get; }
     
-    public bool IsError => ErrorsList != null || (ErrorsList != null && ErrorsList.Any());
+    public bool IsError => ErrorsList != null && ErrorsList.Any();
     public DateTime TimeGenerated { get; }
     
     [JsonConstructor]

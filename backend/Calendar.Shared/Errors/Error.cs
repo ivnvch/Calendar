@@ -52,15 +52,9 @@ public record Error
     public Errors ToErrors()
         => new([this]);
 
-    public string Serialize()//правильно ли?
+    public string Serialize()
     {
-        string serialize = "";
-        foreach (var message in Messages)
-        {
-           serialize = string.Join(SEPARATOR, message.Code, message.Message, Type);
-        }
-        
-        return serialize;
+        return string.Join(SEPARATOR, Messages.Select(m => string.Join(SEPARATOR, m.Code, m.Message, Type)));
     }
     
     public static Error Deserialize(string json)
