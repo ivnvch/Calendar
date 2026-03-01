@@ -33,11 +33,11 @@ public sealed class CreateWorkoutDayHandler : ICommandHandler<Guid, CreateWorkou
 
         WorkoutDay day = new WorkoutDay(command.Date);
 
-        IEnumerable<Result<Exercise,Error>> exercises = command.Exercises.Select(e => day.AddExercise(e.ActivityType.ToEnum<ActivityType>(), e.TargetValue));
-        
-        Result<Exercise, Error> failed = exercises.FirstOrDefault(r => r.IsFailure);
-        if (failed.IsFailure)
-            return failed.Error.ToErrors();
+        foreach (var exerciseResult in command.Exercises.Select(e => day.AddExercise(e.ActivityType.ToEnum<ActivityType>(), e.TargetValue)))
+        {
+            if (exerciseResult.IsFailure)
+                return exerciseResult.Error.ToErrors();
+        }
 
         Result<Guid, Error> addedWorkoutDay = await _workoutDayRepository.Add(day, cancellationToken);
         

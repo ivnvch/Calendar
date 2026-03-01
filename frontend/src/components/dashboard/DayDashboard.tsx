@@ -17,7 +17,7 @@ interface DayDashboardProps {
 export function DayDashboard({ selectedDate }: DayDashboardProps) {
   const dateStr = format(selectedDate, "yyyy-MM-dd");
 
-  const { data: workoutDay, isLoading } = useQuery({
+  const { data: workoutDay, isLoading, error } = useQuery({
     queryKey: ["workoutDay", dateStr],
     queryFn: () => getWorkoutDay(dateStr),
     retry: (count, error) => {
@@ -27,6 +27,10 @@ export function DayDashboard({ selectedDate }: DayDashboardProps) {
   });
 
   const formattedDate = format(selectedDate, "d MMMM yyyy", { locale: ru });
+
+  // Игнорируем 404 - это нормальная ситуация (тренировки ещё нет)
+  const hasNotFound = error?.message.includes("404");
+  const displayWorkoutDay = hasNotFound ? null : workoutDay;
 
   return (
     <Card className="h-full">
@@ -43,7 +47,7 @@ export function DayDashboard({ selectedDate }: DayDashboardProps) {
           <p className="text-sm text-muted-foreground">Загрузка...</p>
         )}
 
-        {!isLoading && (!workoutDay || workoutDay.exercises.length === 0) && (
+        {!isLoading && (!displayWorkoutDay || displayWorkoutDay.exercises.length === 0) && (
           <div className="flex flex-col items-center gap-2 py-8 text-center">
             <CalendarDays className="h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm text-muted-foreground">
@@ -55,7 +59,7 @@ export function DayDashboard({ selectedDate }: DayDashboardProps) {
           </div>
         )}
 
-        {workoutDay?.exercises.map((exercise) => (
+        {displayWorkoutDay?.exercises.map((exercise) => (
           <ExerciseCard
             key={exercise.id}
             exercise={exercise}

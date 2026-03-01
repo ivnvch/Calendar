@@ -34,6 +34,8 @@ public class UpdateExerciseStatusHandler : ICommandHandler<UpdateExerciseStatusC
             return validationResult.Errors.ToErrors();
 
         var transactionScopeResult = await _transactionManager.BeginTransaction(cancellationToken);
+        if (transactionScopeResult.IsFailure)
+            return transactionScopeResult.Error.ToErrors();
         
         using var transactionScope = transactionScopeResult.Value;
         

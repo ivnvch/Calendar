@@ -45,6 +45,7 @@ app.UseExceptionMiddleware();
 if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 
+app.MapGet("/", () => Results.Ok());
 app.MapControllers();
 
 app.Run();
